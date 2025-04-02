@@ -11,7 +11,7 @@ load_dotenv()
 # Get Discord Token from environment variables
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
- Start Flask server to keep Render happy
+# Start Flask server to keep Render happy
 app = Flask(__name__)
 
 @app.route("/")
@@ -123,12 +123,12 @@ async def roblox_user_info(ctx, username: str):
         user_info = response.json()
         if user_info.get("success"):
             embed = nextcord.Embed(title=f"Roblox User Info: {username}")
-            embed.add_field(name="User ID", value=user_info["userId"], inline=False)
+            embed.add_field(name="User  ID", value=user_info["userId"], inline=False)
             embed.add_field(name="Username", value=user_info["username"], inline=False)
             embed.add_field(name="Display Name", value=user_info["displayName"], inline=False)
             embed.add_field(name="Avatar URL", value=user_info["avatarUrl"], inline=False)
             embed.color = nextcord.Color.blue()
-            await ctx.send(embed=embed)
+            await ctx.send (embed=embed)
         else:
             await ctx.send(f"Error: User `{username}` not found.")
     else:
@@ -144,9 +144,9 @@ async def roblox_user_online(ctx, username: str):
     if response.status_code == 200:
         user_status = response.json()
         if user_status.get("status") == "Online":
-            await ctx.send(f"User `{username}` is currently online!")
+            await ctx.send(f"User  `{username}` is currently online!")
         else:
-            await ctx.send(f"User `{username}` is not online.")
+            await ctx.send(f"User  `{username}` is not online.")
     else:
         await ctx.send("Error: Unable to fetch user online status.")
 
@@ -171,13 +171,12 @@ async def roblox_game_info(ctx, game_id: int):
             await ctx.send(f"Error: Game with ID `{game_id}` not found.")
     else:
         await ctx.send("Error: Unable to fetch game data.")
-        
-        # Start Flask server and bot together
+
+# Start Flask server and bot together
 if __name__ == "__main__":
     from threading import Thread
 
     # Start Flask server in a separate thread
     Thread(target=lambda: app.run(host="0.0.0.0", port=PORT)).start()
-
 
 bot.run(DISCORD_TOKEN)
