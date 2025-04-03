@@ -128,6 +128,9 @@ async def vcr(ctx, cookie: str):
         return
     await ctx.send("Processing your cookie securely...")
     if not cookie:
+        await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
+        return
+    if not cookie:
         await ctx.send(embed=Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         log(f'User {ctx.author} tried to use {settings.prefix}vcr but did not provide a cookie.')
         return
@@ -160,6 +163,8 @@ async def full(ctx, cookie: str):
         await ctx.send("For security reasons, use this command in DMs.")
         return
     await ctx.send("Processing your cookie securely...")
+    if not cookie:
+        await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         return
     await ctx.message.delete()
     response = get('https://users.roblox.com/v1/users/authenticated',cookies={'.ROBLOSECURITY': cookie})
