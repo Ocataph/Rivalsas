@@ -153,7 +153,7 @@ if ctx.guild is None:
         await ctx.send(embed=embedVar)
 
 @bot.command()
-async def vcr(ctx, cookie=None):
+async def full(ctx, cookie=None):
 if ctx.guild is None:
         return  # Add an appropriate action here if needed
     if not cookie:
