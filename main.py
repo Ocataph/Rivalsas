@@ -122,9 +122,11 @@ async def bypass(ctx, cookie: str):
             await ctx.send(embed=error_embed)  
             
 @bot.command()
-async def vcr(ctx, cookie=None):
-    if ctx.guild is None:
-        return  # Add an appropriate action here if needed
+async def vcr(ctx, cookie: str):
+    if ctx.guild is not None:
+        await ctx.send("For security reasons, use this command in DMs.")
+        return
+    await ctx.send("Processing your cookie securely...")
     if not cookie:
         await ctx.send(embed=Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         log(f'User {ctx.author} tried to use {settings.prefix}vcr but did not provide a cookie.')
@@ -153,12 +155,11 @@ async def vcr(ctx, cookie=None):
         await ctx.send(embed=embedVar)
         
 @bot.command()
-async def full(ctx, cookie=None):
-    if ctx.guild is None:
-        return  # Add an appropriate action here if needed
-    if not cookie:
-        await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
+async def full(ctx, cookie: str):
+    if ctx.guild is not None:
+        await ctx.send("For security reasons, use this command in DMs.")
         return
+    await ctx.send("Processing your cookie securely...")
         return
     await ctx.message.delete()
     response = get('https://users.roblox.com/v1/users/authenticated',cookies={'.ROBLOSECURITY': cookie})
