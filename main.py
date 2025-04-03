@@ -18,6 +18,10 @@ app = Flask(__name__)
 def home():
     return "Bot is running!"
 
+@app.route("/keepalive")
+def keep_alive():
+    return "Keep-alive response", 200  # Respond with a 200 OK status
+
 # Get the port from the environment or use 8080
 PORT = int(os.getenv("PORT", 8080))
 
@@ -128,7 +132,7 @@ async def roblox_user_info(ctx, username: str):
             embed.add_field(name="Display Name", value=user_info["displayName"], inline=False)
             embed.add_field(name="Avatar URL", value=user_info["avatarUrl"], inline=False)
             embed.color = nextcord.Color.blue()
-            await ctx.send (embed=embed)
+            await ctx.send(embed=embed)
         else:
             await ctx.send(f"Error: User `{username}` not found.")
     else:
