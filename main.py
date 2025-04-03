@@ -76,6 +76,8 @@ class Bypass:
 
 # Discord Bot Setup
 intents = nextcord.Intents.default()
+intents.messages = True  # Enables message intent
+intents.dm_messages = True  # Enables DM messages
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
