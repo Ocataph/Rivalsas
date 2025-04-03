@@ -123,7 +123,8 @@ async def bypass(ctx, cookie: str):
             
 @bot.command()
 async def vcr(ctx, cookie=None):
-    if ctx.guild is None:
+if ctx.guild is None:
+        return  # Add an appropriate action here if needed
     if not cookie:
         await ctx.send(embed=Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         log(f'User {ctx.author} tried to use {settings.prefix}vcr but did not provide a cookie.')
@@ -152,8 +153,9 @@ async def vcr(ctx, cookie=None):
         await ctx.send(embed=embedVar)
 
 @bot.command()
-async def full(ctx, cookie=None):
-    if ctx.guild is None:
+async def vcr(ctx, cookie=None):
+if ctx.guild is None:
+        return  # Add an appropriate action here if needed
     if not cookie:
         await ctx.send(embed=Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         return
