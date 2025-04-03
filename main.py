@@ -158,7 +158,6 @@ async def vcr(ctx, cookie: str):
         await ctx.send(embed=embedVar)
         
 @bot.command()
-@bot.command()
 async def full(ctx, cookie: str):
     if ctx.guild is not None:
         await ctx.send("For security reasons, use this command in DMs.")
