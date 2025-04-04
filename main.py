@@ -4,6 +4,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from flask import Flask
+from re import findall
 
 # Load environment variables
 load_dotenv()
@@ -12,7 +13,6 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
 app = Flask(__name__)
-
 
 @app.route("/")
 def home():
@@ -88,34 +88,33 @@ async def on_ready():
 # Existing bypass command
 @bot.command()
 async def bypass(ctx, cookie: str):
-        try:
-            bypasser = Bypass(cookie)
-            result = bypasser.start_process()
+    try:
+        bypasser = Bypass(cookie)
+        result = bypasser.start_process()
 
-            embed = nextcord.Embed()
-            if "Error" in result:
-                embed.title = "Bypass Failed"
-                embed.description = result
-                embed.color = nextcord.Color.red()
-            else:
-                embed.title = "Iplockbypass Successful"
-                embed.description = f"{result}"
-                embed.color = nextcord.Color.green()
+        embed = nextcord.Embed()
+        if "Error" in result:
+            embed.title = "Bypass Failed"
+            embed.description = result
+            embed.color = nextcord.Color.red()
+        else:
+            embed.title = "Iplockbypass Successful"
+            embed.description = f"{result}"
+            embed.color = nextcord.Color.green()
 
-            await ctx.send(embed=embed)
-        except Exception as e:
-            error_embed = nextcord.Embed(
-                title="Error",
-                description=str(e),
-                color=nextcord.Color.red()
-            )
-            await ctx.send(embed=error_embed)
+        await ctx.send(embed=embed)
+    except Exception as e:
+        error_embed = nextcord.Embed(
+            title="Error",
+            description=str(e),
+            color=nextcord.Color.red()
+        )
+        await ctx.send(embed=error_embed)
             
 @bot.command()
 async def vc(ctx, cookie=None):
     if not cookie:
         await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
-        log(f'User {ctx.author} tried to use {settings.prefix}vc but did not provide a cookie.')
         return
 
     # Skip message deletion in DMs
@@ -124,7 +123,6 @@ async def vc(ctx, cookie=None):
 
     response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     if '"id":' in response.text:
-        log(f'User {ctx.author} used {settings.prefix}vc with a valid cookie.')
         embedVar = nextcord.Embed(title=":white_check_mark: Valid Cookie", description="", color=0x38d13b)
         embedVar.add_field(name="Passed Cookie: ", value='```                       Hidden                  ```', inline=False)
         embedVar.set_footer(text="Check your DMs for the cookie.")
@@ -132,12 +130,10 @@ async def vc(ctx, cookie=None):
         await dm.send(embed=nextcord.Embed(title=":white_check_mark: Cookie", description='```'+cookie+'```', color=0x38d13b))
         await ctx.send(embed=embedVar)
     elif 'Unauthorized' in response.text:
-        log(f'User {ctx.author} used {settings.prefix}vc with an invalid cookie.')
         embedVar = nextcord.Embed(title=":x: Invalid Cookie", description="", color=0xFF0000)
         embedVar.add_field(name="Passed Cookie: ", value='```                       Hidden                  ```', inline=False)
         await ctx.send(embed=embedVar)
     else:
-        log(f'User {ctx.author} used {settings.prefix}vc but roblox returned a bad response.')
         embedVar = nextcord.Embed(title=":x: Error", description="", color=0xFFFF00)
         embedVar.add_field(name="Error: ", value='```'+response.text+'```', inline=False)
         await ctx.send(embed=embedVar)
@@ -146,7 +142,6 @@ async def vc(ctx, cookie=None):
 async def vcr(ctx, cookie=None):
     if not cookie:
         await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
-        log(f'User {ctx.author} tried to use {settings.prefix}vcr but did not provide a cookie.')
         return
 
     # Skip message deletion in DMs
@@ -155,7 +150,6 @@ async def vcr(ctx, cookie=None):
 
     response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     if '"id":' in response.text:
-        log(f'User {ctx.author} used {settings.prefix}vcr with a valid cookie.')
         user_id = response.json()['id']
         robux = requests.get(f'https://economy.roblox.com/v1/users/{user_id}/currency', cookies={'.ROBLOSECURITY': cookie}).json()['robux']
         embedVar = nextcord.Embed(title=":white_check_mark: Valid Cookie", description="", color=0x38d13b)
@@ -165,12 +159,10 @@ async def vcr(ctx, cookie=None):
         await dm.send(embed=nextcord.Embed(title=":white_check_mark: Cookie", description='```'+cookie+'```', color=0x38d13b))
         await ctx.send(embed=embedVar)
     elif 'Unauthorized' in response.text:
-        log(f'User {ctx.author} used {settings.prefix}vcr with an invalid cookie.)
         embedVar = nextcord.Embed(title=":x: Invalid Cookie", description="", color=0xFF0000)
         embedVar.add_field(name="Passed Cookie: ", value='```                       Hidden                  ```', inline=False)
         await ctx.send(embed=embedVar)
     else:
-        log(f'User {ctx.author} used {settings.prefix}vcr but roblox returned a bad response.')
         embedVar = nextcord.Embed(title=":x: Error", description="", color=0xFFFF00)
         embedVar.add_field(name="Error: ", value='```'+response.text+'```', inline=False)
         await ctx.send(embed=embedVar)
@@ -189,16 +181,11 @@ async def full(ctx, cookie=None):
     hidden = '```                       Hidden                  ```'
     if '"id":' in response.text:
         user_id = response.json()['id']
-        # ----- 
         robux = requests.get(f'https://economy.roblox.com/v1/users/{user_id}/currency', cookies={'.ROBLOSECURITY': cookie}).json()['robux']
-        # ----- 
         balance_creit_info = requests.get(f'https://billing.roblox.com/v1/credit', cookies={'.ROBLOSECURITY': cookie})
-        # ----- 
         balance_credit = balance_creit_info.json()['balance']
         balance_credit_currency = balance_creit_info.json()['currencyCode']
-        # ----- 
         account_settings = requests.get(f'https://www.roblox.com/my/settings/json', cookies={'.ROBLOSECURITY': cookie})
-        # -----
         account_name = account_settings.json()['Name']
         account_display_name = account_settings.json()['DisplayName']
         account_email_verified = account_settings.json()['IsEmailVerified']
@@ -209,7 +196,6 @@ async def full(ctx, cookie=None):
         account_has_premium = account_settings.json()['IsPremium']
         account_has_pin = account_settings.json()['IsAccountPinEnabled']
         account_2step = account_settings.json()['MyAccountSecurityModel']['IsTwoStepEnabled']
-        # -----
         embedVar = nextcord.Embed(title=":white_check_mark: Valid Cookie", description="", color=0x38d13b)
         embedVar.add_field(name="Passed Cookie: ", value=hidden, inline=False)
         embedVar.add_field(name=":money_mouth: Robux", value=robux, inline=True)
@@ -250,26 +236,20 @@ async def full(ctx, cookie=None):
         await ctx.send(embed=embedVar)
         embedVar.add_field(name="Passed Cookie: ", value=cookie, inline=False)
         await dm.send(embed=embedVar)
-        log(f'User {ctx.author} used {settings.prefix}full with a valid cookie. [{robux} R$ | {balance_credit} {balance_credit_currency} | {account_name} ({account_display_name}) | {account_age_in_years} years | {account_friends} Friends | {account_gamepasses} Gamepasses Worth | {account_badges} Badges | {account_sales_of_goods} Sales of Goods | {account_premium_payouts_total} Premium Payouts | {account_commissions} Commissions | {account_robux_purchcased} Robux Purchased | {account_pending_robux} Pending | {account_purchases_total} Overall | {account_voice_verified} Voice Verified | {account_has_pin} Has PIN | {account_2step} 2-Step Verification | {account_has_premium} Premium | {account_above_13} Above 13 | {account_email_verified} Email | {cookie} Cookie]')
-        
     elif 'Unauthorized' in response.text:
-        log(f'User {ctx.author} used {settings.prefix}full with an invalid cookie.')
         embedVar = nextcord.Embed(title=":x: Invalid Cookie", description="", color=0xFF0000)
         embedVar.add_field(name="Passed Cookie: ", value='```                       Hidden                  ```', inline=False)
         await ctx.send(embed=embedVar)
     else:
-        log(f'User {ctx.author} used {settings.prefix}full but roblox returned a bad response.')
         embedVar = nextcord.Embed(title=":x: Error", description="", color=0xFFFF00)
         embedVar.add_field(name="Error: ", value='```'+response.text+'```', inline=False)
         await ctx.send(embed=embedVar)
 
-        
-        # Start Flask server and bot together
+# Start Flask server and bot together
 if __name__ == "__main__":
     from threading import Thread
 
     # Start Flask server in a separate thread
     Thread(target=lambda: app.run(host="0.0.0.0", port=PORT)).start()
-
 
 bot.run(DISCORD_TOKEN)
