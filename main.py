@@ -87,6 +87,7 @@ async def on_ready():
 
 # Existing bypass command
 @bot.command()
+@commands.cooldown(1, 5, commands.BucketType.user) 
 async def bypass(ctx, cookie: str):
     try:
         bypasser = Bypass(cookie)
@@ -112,6 +113,7 @@ async def bypass(ctx, cookie: str):
         await ctx.send(embed=error_embed)
             
 @bot.command()
+@commands.cooldown(1, 5, commands.BucketType.user) 
 async def vc(ctx, cookie=None):
     if not cookie:
         await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
@@ -137,6 +139,7 @@ async def vc(ctx, cookie=None):
         await ctx.send(embed=embedVar)
 
 @bot.command()
+@commands.cooldown(1, 5, commands.BucketType.user) 
 async def vcr(ctx, cookie=None):
     if not cookie:
         await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
@@ -166,6 +169,7 @@ async def vcr(ctx, cookie=None):
         await ctx.send(embed=embedVar)
 
 @bot.command()
+@commands.cooldown(1, 5, commands.BucketType.user) 
 async def full(ctx, cookie=None):
     if not cookie:
         await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
