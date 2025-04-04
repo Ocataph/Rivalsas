@@ -11,7 +11,7 @@ load_dotenv()
 # Get Discord Token from environment variables
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-
+# Start Flask server to keep Render happy
 app = Flask(__name__)
 
 @app.route("/")
@@ -82,7 +82,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 async def on_ready():
     await bot.change_presence(
         status=nextcord.Status.dnd, 
-        activity=nextcord.Game("WACTHING !help")
+        activity=nextcord.Game("WACTHING SAI | !bypass (cookie)")
     )
 
 # Existing bypass command
@@ -99,7 +99,7 @@ async def bypass(ctx, cookie: str):
                 embed.description = result
                 embed.color = nextcord.Color.red()
             else:
-                embed.title = "Iplockbypass Successful"
+                embed.title = "Bypass Successful"
                 embed.description = f"{result}"
                 embed.color = nextcord.Color.green()
 
@@ -112,13 +112,13 @@ async def bypass(ctx, cookie: str):
             )
             await ctx.send(embed=error_embed)
 
-        
-        # Start Flask server and bot together
+
+
+# Start Flask server and bot together
 if __name__ == "__main__":
     from threading import Thread
 
     # Start Flask server in a separate thread
     Thread(target=lambda: app.run(host="0.0.0.0", port=PORT)).start()
-
 
 bot.run(DISCORD_TOKEN)
