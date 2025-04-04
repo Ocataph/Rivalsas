@@ -11,7 +11,7 @@ load_dotenv()
 # Get Discord Token from environment variables
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
- Start Flask server to keep Render happy
+
 app = Flask(__name__)
 
 @app.route("/")
