@@ -117,7 +117,15 @@ async def vc(ctx, cookie=None):
         await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         log(f'User {ctx.author} tried to use {settings.prefix}vc but did not provide a cookie.')
         return
+
+    # Check if the command is executed in a DM channel
+    if isinstance(ctx.channel, nextcord.DMChannel):
+        await ctx.send("This command cannot be used in DMs. Please use it in a server.")
+        return
+
+    # Delete the message if it's not in a DM
     await ctx.message.delete()
+
     response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     if '"id":' in response.text:
         log(f'User {ctx.author} used {settings.prefix}vc with a valid cookie.')
@@ -144,7 +152,15 @@ async def vcr(ctx, cookie=None):
         await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         log(f'User {ctx.author} tried to use {settings.prefix}vcr but did not provide a cookie.')
         return
+
+    # Check if the command is executed in a DM channel
+    if isinstance(ctx.channel, nextcord.DMChannel):
+        await ctx.send("This command cannot be used in DMs. Please use it in a server.")
+        return
+
+    # Delete the message if it's not in a DM
     await ctx.message.delete()
+
     response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     if '"id":' in response.text:
         log(f'User {ctx.author} used {settings.prefix}vcr with a valid cookie.')
@@ -172,7 +188,15 @@ async def full(ctx, cookie=None):
     if not cookie:
         await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         return
+
+    # Check if the command is executed in a DM channel
+    if isinstance(ctx.channel, nextcord.DMChannel):
+        await ctx.send("This command cannot be used in DMs. Please use it in a server.")
+        return
+
+    # Delete the message if it's not in a DM
     await ctx.message.delete()
+
     response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     hidden = '```                       Hidden                  ```'
     if '"id":' in response.text:
