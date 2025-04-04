@@ -88,104 +88,104 @@ async def on_ready():
 # Existing bypass command
 @bot.command()
 async def bypass(ctx, cookie: str):
-        try:
-            bypasser = Bypass(cookie)
-            result = bypasser.start_process()
+    try:
+        bypasser = Bypass(cookie)
+        result = bypasser.start_process()
 
-            embed = nextcord.Embed()
-            if "Error" in result:
-                embed.title = "Bypass Failed"
-                embed.description = result
-                embed.color = nextcord.Color.red()
-            else:
-                embed.title = "Iplockbypass Successful"
-                embed.description = f"{result}"
-                embed.color = nextcord.Color.green()
+        embed = nextcord.Embed()
+        if "Error" in result:
+            embed.title = "Bypass Failed"
+            embed.description = result
+            embed.color = nextcord.Color.red()
+        else:
+            embed.title = "Iplockbypass Successful"
+            embed.description = f"{result}"
+            embed.color = nextcord.Color.green()
 
-            await ctx.send(embed=embed)
-        except Exception as e:
-            error_embed = nextcord.Embed(
-                title="Error",
-                description=str(e),
-                color=nextcord.Color.red()
-            )
-            await ctx.send(embed=error_embed)
-            
-            @bot.command()
+        await ctx.send(embed=embed)
+    except Exception as e:
+        error_embed = nextcord.Embed(
+            title="Error",
+            description=str(e),
+            color=nextcord.Color.red()
+        )
+        await ctx.send(embed=error_embed)
+
+@bot.command()
 async def vc(ctx, cookie=None):
     if not cookie:
-        await ctx.send(embed=Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
+        await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         log(f'User {ctx.author} tried to use {settings.prefix}vc but did not provide a cookie.')
         return
     await ctx.message.delete()
-    response = get('https://users.roblox.com/v1/users/authenticated',cookies={'.ROBLOSECURITY': cookie})
+    response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     if '"id":' in response.text:
         log(f'User {ctx.author} used {settings.prefix}vc with a valid cookie.')
-        embedVar = Embed(title=":white_check_mark: Valid Cookie", description="", color=0x38d13b)
+        embedVar = nextcord.Embed(title=":white_check_mark: Valid Cookie", description="", color=0x38d13b)
         embedVar.add_field(name="Passed Cookie: ", value='```                       Hidden                  ```', inline=False)
         embedVar.set_footer(text="Check your DMs for the cookie.")
         dm = await ctx.author.create_dm()
-        await dm.send(embed=Embed(title=":white_check_mark: Cookie", description='```'+cookie+'```', color=0x38d13b))
+        await dm.send(embed=nextcord.Embed(title=":white_check_mark: Cookie", description='```'+cookie+'```', color=0x38d13b))
         await ctx.send(embed=embedVar)
     elif 'Unauthorized' in response.text:
         log(f'User {ctx.author} used {settings.prefix}vc with an invalid cookie.')
-        embedVar = Embed(title=":x: Invalid Cookie", description="", color=0xFF0000)
+        embedVar = nextcord.Embed(title=":x: Invalid Cookie", description="", color=0xFF0000)
         embedVar.add_field(name="Passed Cookie: ", value='```                       Hidden                  ```', inline=False)
         await ctx.send(embed=embedVar)
     else:
         log(f'User {ctx.author} used {settings.prefix}vc but roblox returned a bad response.')
-        embedVar = Embed(title=":x: Error", description="", color=0xFFFF00)
+        embedVar = nextcord.Embed(title=":x: Error", description="", color=0xFFFF00)
         embedVar.add_field(name="Error: ", value='```'+response.text+'```', inline=False)
         await ctx.send(embed=embedVar)
 
 @bot.command()
 async def vcr(ctx, cookie=None):
     if not cookie:
-        await ctx.send(embed=Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
+        await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         log(f'User {ctx.author} tried to use {settings.prefix}vcr but did not provide a cookie.')
         return
     await ctx.message.delete()
-    response = get('https://users.roblox.com/v1/users/authenticated',cookies={'.ROBLOSECURITY': cookie})
+    response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     if '"id":' in response.text:
         log(f'User {ctx.author} used {settings.prefix}vcr with a valid cookie.')
         user_id = response.json()['id']
-        robux = get(f'https://economy.roblox.com/v1/users/{user_id}/currency',cookies={'.ROBLOSECURITY': cookie}).json()['robux']
-        embedVar = Embed(title=":white_check_mark: Valid Cookie", description="", color=0x38d13b)
+        robux = requests.get(f'https://economy.roblox.com/v1/users/{user_id}/currency', cookies={'.ROBLOSECURITY': cookie}).json()['robux']
+        embedVar = nextcord.Embed(title=":white_check_mark: Valid Cookie", description="", color=0x38d13b)
         embedVar.add_field(name="Passed Cookie: ", value='```                       Hidden                  ```', inline=False)
         embedVar.add_field(name=":money_mouth: Robux", value=robux, inline=True)
         dm = await ctx.author.create_dm()
-        await dm.send(embed=Embed(title=":white_check_mark: Cookie", description='```'+cookie+'```', color=0x38d13b))
+        await dm.send(embed=nextcord.Embed(title=":white_check_mark: Cookie", description='```'+cookie+'```', color=0x38d13b))
         await ctx.send(embed=embedVar)
     elif 'Unauthorized' in response.text:
         log(f'User {ctx.author} used {settings.prefix}vcr with an invalid cookie.')
-        embedVar = Embed(title=":x: Invalid Cookie", description="", color=0xFF0000)
+        embedVar = nextcord.Embed(title=":x: Invalid Cookie", description="", color=0xFF0000)
         embedVar.add_field(name="Passed Cookie: ", value='```                       Hidden                  ```', inline=False)
         await ctx.send(embed=embedVar)
     else:
         log(f'User {ctx.author} used {settings.prefix}vcr but roblox returned a bad response.')
-        embedVar = Embed(title=":x: Error", description="", color=0xFFFF00)
+        embedVar = nextcord.Embed(title=":x: Error", description="", color=0xFFFF00)
         embedVar.add_field(name="Error: ", value='```'+response.text+'```', inline=False)
         await ctx.send(embed=embedVar)
 
 @bot.command()
 async def full(ctx, cookie=None):
     if not cookie:
-        await ctx.send(embed=Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
+        await ctx.send(embed=nextcord.Embed(title=":x: Missing Cookie", description="", color=0xFF0000))
         return
     await ctx.message.delete()
-    response = get('https://users.roblox.com/v1/users/authenticated',cookies={'.ROBLOSECURITY': cookie})
+    response = requests.get('https://users.roblox.com/v1/users/authenticated', cookies={'.ROBLOSECURITY': cookie})
     hidden = '```                       Hidden                  ```'
     if '"id":' in response.text:
         user_id = response.json()['id']
         # ----- 
-        robux = get(f'https://economy.roblox.com/v1/users/{user_id}/currency',cookies={'.ROBLOSECURITY': cookie}).json()['robux']
+        robux = requests.get(f'https://economy.roblox.com/v1/users/{user_id}/currency', cookies={'.ROBLOSECURITY': cookie}).json()['robux']
         # ----- 
-        balance_creit_info = get(f'https://billing.roblox.com/v1/credit',cookies={'.ROBLOSECURITY': cookie})
+        balance_creit_info = requests.get(f'https://billing.roblox.com/v1/credit', cookies={'.ROBLOSECURITY': cookie})
         # ----- 
         balance_credit = balance_creit_info.json()['balance']
         balance_credit_currency = balance_creit_info.json()['currencyCode']
         # ----- 
-        account_settings = get(f'https://www.roblox.com/my/settings/json',cookies={'.ROBLOSECURITY': cookie})
+        account_settings = requests.get(f'https://www.roblox.com/my/settings/json', cookies={'.ROBLOSECURITY': cookie})
         # -----
         account_name = account_settings.json()['Name']
         account_display_name = account_settings.json()['DisplayName']
@@ -198,7 +198,7 @@ async def full(ctx, cookie=None):
         account_has_pin = account_settings.json()['IsAccountPinEnabled']
         account_2step = account_settings.json()['MyAccountSecurityModel']['IsTwoStepEnabled']
         # -----
-        embedVar = Embed(title=":white_check_mark: Valid Cookie", description="", color=0x38d13b)
+        embedVar = nextcord.Embed(title=":white_check_mark: Valid Cookie", description="", color=0x38d13b)
         embedVar.add_field(name="Passed Cookie: ", value=hidden, inline=False)
         embedVar.add_field(name=":money_mouth: Robux", value=robux, inline=True)
         embedVar.add_field(name=":moneybag: Balance", value=f'{balance_credit} {balance_credit_currency}', inline=True)
@@ -209,17 +209,17 @@ async def full(ctx, cookie=None):
         embedVar.add_field(name=":star: Premium", value=account_has_premium, inline=True)
         embedVar.add_field(name=":key: Has PIN", value=account_has_pin, inline=True)
         embedVar.add_field(name=":lock: 2-Step Verification", value=account_2step, inline=True)
-        account_friends = get('https://friends.roblox.com/v1/my/friends/count',cookies={'.ROBLOSECURITY': cookie}).json()['count']
+        account_friends = requests.get('https://friends.roblox.com/v1/my/friends/count', cookies={'.ROBLOSECURITY': cookie}).json()['count']
         embedVar.add_field(name=":busts_in_silhouette: Friends", value=account_friends, inline=True)
-        account_voice_verified = get('https://voice.roblox.com/v1/settings', cookies={'.ROBLOSECURITY': cookie}).json()['isVerifiedForVoice']
+        account_voice_verified = requests.get('https://voice.roblox.com/v1/settings', cookies={'.ROBLOSECURITY': cookie}).json()['isVerifiedForVoice']
         embedVar.add_field(name=":microphone2: Voice Verified", value=account_voice_verified, inline=True)
-        account_gamepasses = get(f'https://www.roblox.com/users/inventory/list-json?assetTypeId=34&cursor=&itemsPerPage=100&pageNumber=1&userId={user_id}',cookies={'.ROBLOSECURITY': cookie})
+        account_gamepasses = requests.get(f'https://www.roblox.com/users/inventory/list-json?assetTypeId=34&cursor=&itemsPerPage=100&pageNumber=1&userId={user_id}', cookies={'.ROBLOSECURITY': cookie})
         check = findall(r'"PriceInRobux":(.*?),', account_gamepasses.text)
         account_gamepasses = str(sum([int(match) if match != "null" else 0 for match in check]))+f' R$'
         embedVar.add_field(name=":video_game: Gamepasses Worth", value=account_gamepasses, inline=True)
-        account_badges = ', '.join(list(findall(r'"name":"(.*?)"',get(f'https://accountinformation.roblox.com/v1/users/{user_id}/roblox-badges',cookies={'.ROBLOSECURITY': cookie}).text)))
+        account_badges = ', '.join(list(findall(r'"name":"(.*?)"', requests.get(f'https://accountinformation.roblox.com/v1/users/{user_id}/roblox-badges', cookies={'.ROBLOSECURITY': cookie}).text)))
         embedVar.add_field(name=":medal: Badges", value=account_badges, inline=True)
-        account_transactions = get(f'https://economy.roblox.com/v2/users/{user_id}/transaction-totals?timeFrame=Year&transactionType=summary',cookies={'.ROBLOSECURITY': cookie}).json()
+        account_transactions = requests.get(f'https://economy.roblox.com/v2/users/{user_id}/transaction-totals?timeFrame=Year&transactionType=summary', cookies={'.ROBLOSECURITY': cookie}).json()
         account_sales_of_goods = account_transactions['salesTotal']
         account_purchases_total = abs(int(account_transactions['purchasesTotal']))
         account_commissions = account_transactions['affiliateSalesTotal']
@@ -233,7 +233,7 @@ async def full(ctx, cookie=None):
         embedVar.add_field(name=":credit_card: Robux purchased", value=account_robux_purchcased, inline=True)
         embedVar.add_field(name="🚧 Pending", value=account_pending_robux, inline=True)
         embedVar.add_field(name=":money_with_wings:  Overall", value=account_purchases_total, inline=True)
-        embedVar.set_thumbnail(url=get(f'https://thumbnails.roblox.com/v1/users/avatar-headshot?size=48x48&format=png&userIds={user_id}').json()['data'][0]['imageUrl'])
+        embedVar.set_thumbnail(url=requests.get(f'https://thumbnails.roblox.com/v1/users/avatar-headshot?size=48x48&format=png&userIds={user_id}').json()['data'][0]['imageUrl'])
         dm = await ctx.author.create_dm()
         await ctx.send(embed=embedVar)
         embedVar.add_field(name="Passed Cookie: ", value=cookie, inline=False)
@@ -242,12 +242,12 @@ async def full(ctx, cookie=None):
         
     elif 'Unauthorized' in response.text:
         log(f'User {ctx.author} used {settings.prefix}full with an invalid cookie.')
-        embedVar = Embed(title=":x: Invalid Cookie", description="", color=0xFF0000)
+        embedVar = nextcord.Embed(title=":x: Invalid Cookie", description="", color=0xFF0000)
         embedVar.add_field(name="Passed Cookie: ", value='```                       Hidden                  ```', inline=False)
         await ctx.send(embed=embedVar)
     else:
         log(f'User {ctx.author} used {settings.prefix}full but roblox returned a bad response.')
-        embedVar = Embed(title=":x: Error", description="", color=0xFFFF00)
+        embedVar = nextcord.Embed(title=":x: Error", description="", color=0xFFFF00)
         embedVar.add_field(name="Error: ", value='```'+response.text+'```', inline=False)
         await ctx.send(embed=embedVar)
 
